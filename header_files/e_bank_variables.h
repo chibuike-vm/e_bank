@@ -26,6 +26,7 @@ struct CLIENTSDATA
  *
  * @vUserName: This member stores the username of each client.
  * @vPassWord: This memeber stores the password of each client.
+ * @vDepositAmt: This member stores the password of each client.
  *
  * Description: The VCLIENTSDATA Structure Data-Type basically stores the
  * verified username and pssword of each client.
@@ -34,6 +35,7 @@ struct VCLIENTSDATA
 {
 	char vUserName[50];
 	char vPassWord[50];
+	int vDepositAmt;
 };
 
 #endif /* _E_BANKING_VARIABLES_H_ */
