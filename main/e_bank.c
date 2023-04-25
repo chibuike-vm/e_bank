@@ -15,8 +15,9 @@
  */
 int main(void)
 {
-	char intialAction[50], response[5];
+	char intialAction[50], response[5], control[5];
 	int s_ret;
+	struct VCLIENTSDATA vClientsData;
 
 	/* Function Pointer Concept: Implementing Callback Function */
 	struct CLIENTSDATA (*cDV1Fptr)(char retD[5]);
@@ -35,10 +36,35 @@ int main(void)
 	{
 		loadingDisplay();
 		pToDb(response, cDV1Fptr);
+
+		printf("\n Do you want to fund your account right away?\n");
+		printf(" Kindly enter (yes or no): ");
+		fgets(control, 5, stdin);
+		(s_ret = sscanf(control, "%s", control)) ?
+			s_ret : printf("sscanf Operation Failed!\n");
+
+		if (strcmp(control, "yes") == 0)
+		{
+			loadingDisplay();
+			strcpy(response, "yes");
+			vClientsData = cDV2(response);
+			DbValidator(vClientsData);
+		}
+		else
+		{
+			printf("\n You will be automatically prompted to fund your account on\n");
+			printf(" your next sign in. The fund deposit is required to get your");
+			printf("\n account activated!\n");
+		}
 	}
 	else if (strcmp(response, "yes") == 0)
 	{
-		cDV2(response);
+		vClientsData = cDV2(response);
+		DbValidator(vClientsData);
+	}
+	else
+	{
+		printf("\n Invalid Input!\n Try Again...\n");
 	}
 
 	printf("\n-----------------GOODBYE FROM E-BANKING SYSTEM-----------------\n");
@@ -46,3 +72,4 @@ int main(void)
 
 	return (0);
 }
+
