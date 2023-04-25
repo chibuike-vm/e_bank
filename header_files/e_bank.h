@@ -52,7 +52,7 @@ struct CLIENTSDATA cDV1(char retD[5])
 		printf(" Username: ");
 		fgets(clientsData.userName, 50, stdin);
 		(s_ret = sscanf(clientsData.userName, "%s", clientsData.userName)) ?
-			s_ret : printf("sscanf Function Failed!");
+					s_ret : printf("sscanf Function Failed!");
 
 		dataLength = strlen(clientsData.userName);
 
@@ -68,7 +68,7 @@ struct CLIENTSDATA cDV1(char retD[5])
 		printf(" Password: ");
 		fgets(clientsData.passWord, 50, stdin);
 		(s_ret = sscanf(clientsData.passWord, "%s", clientsData.passWord)) ?
-			s_ret : printf("sscanf Function Failed!");
+					s_ret : printf("sscanf Function Failed!");
 
 		dataLength = strlen(clientsData.passWord);
 
@@ -84,17 +84,12 @@ struct CLIENTSDATA cDV1(char retD[5])
 		printf(" Age: ");
 		fgets(clientsData.age, 5, stdin);
 		(s_ret = sscanf(clientsData.age, "%s",  clientsData.age)) ?
-			s_ret : printf("sscanf Function Failed!");
+				s_ret : printf("sscanf Function Failed!");
 
 		printf(" Email: ");
 		fgets(clientsData.email, 45, stdin);
 		(s_ret = sscanf(clientsData.email, "%s", clientsData.email)) ?
-			s_ret : printf("sscanf Function Failed!");
-
-		loadingDisplay();
-		printf("\n Dear %s, your details have been successfuly submitted",
-				clientsData.userName);
-		printf("\n and your E- Bank account has been successfully opened!\n");
+				s_ret : printf("sscanf Function Failed!");
 	}
 
 	return (clientsData);
@@ -115,11 +110,11 @@ struct CLIENTSDATA cDV1(char retD[5])
  */
 void pToDb(char retD[5], struct CLIENTSDATA (*cDV1Fptr)(char retD[5]))
 {
+	struct CLIENTSDATA clientsData;
+	FILE *file = fopen("database/clients_data.txt", "a+");
+
 	if (strcmp(retD, "no") == 0)
 	{
-		struct CLIENTSDATA clientsData;
-		FILE *file = fopen("database/clients_data.txt", "a+");
-
 		clientsData = (*cDV1Fptr)(retD);
 
 		fprintf(file, "%s\t\t%s\t%s\t%s\n",
@@ -128,9 +123,14 @@ void pToDb(char retD[5], struct CLIENTSDATA (*cDV1Fptr)(char retD[5]))
 				clientsData.age,
 				clientsData.email
 		       );
-
-		fclose(file);
 	}
+
+	fclose(file);
+
+	loadingDisplay();
+	printf("\n Dear %s, your details have been submitted and your",
+			clientsData.userName);
+	printf("\n E- Bank account has been successfully created!\n");
 }
 
 /**
@@ -140,8 +140,11 @@ void pToDb(char retD[5], struct CLIENTSDATA (*cDV1Fptr)(char retD[5]))
  *
  * Description: This function is basically a validator function that validates
  * the username and password string inputs provided by an interacting user.
+ *
+ * Return: This function returns a vClientsData struct data-type upon
+ * successful execution.
  */
-void cDV2(char retD[5])
+struct VCLIENTSDATA cDV2(char retD[5])
 {
 	struct VCLIENTSDATA vClientsData;
 	struct CLIENTSDATA clientsData;
@@ -157,12 +160,12 @@ void cDV2(char retD[5])
 		printf("\n Username: ");
 		fgets(vClientsData.vUserName, 50, stdin);
 		(s_ret = sscanf(vClientsData.vUserName, "%s", vClientsData.vUserName)) ?
-			s_ret : printf("sscanf Function Failed!");
+					s_ret : printf("sscanf Function Failed!");
 
 		printf(" Password: ");
 		fgets(vClientsData.vPassWord, 50, stdin);
 		(s_ret = sscanf(vClientsData.vPassWord, "%s", vClientsData.vPassWord)) ?
-			s_ret : printf("sscanf Function Failed!");
+					s_ret : printf("sscanf Function Failed!");
 
 		while (fgets(buffer, 150, file) != NULL)
 		{
@@ -195,6 +198,103 @@ void cDV2(char retD[5])
 			exit(1);
 		}
 	}
+
+	return (vClientsData);
+}
+
+/**
+ * depositorFn - Depositor Function.
+ *
+ * Description: This function basically prompts the user to enter a deposit
+ * amount as an input.
+ *
+ * Return: This function returns the amount of deposit entered by the user upon
+ * successful execution.
+ */
+int depositorFn(void)
+{
+	char buffer[50];
+	int depositAmt;
+
+	printf(" How much US dollars do you want to fund your account with?");
+	printf("\n Kindly enter the amount (in figures only): ");
+	fgets(buffer, 50, stdin);
+
+	/* sscanf returns zero (falsy expression) upon failure */
+	if (sscanf(buffer, "%d", &depositAmt))
+	{
+		printf("\n You have successfully funded your account!\n\n");
+		printf(" Your Account Balance: $%d\n", depositAmt);
+	}
+
+	return (depositAmt);
+}
+
+/**
+ * printToDb - Print To clients_deposit.txt Database File.
+ *
+ * @vClientsData: This struct data-type parameter provides the clients username
+ * data that gets printed to the clients_deposit.txt database file.
+ *
+ * @depositAmt: This parameter holds the clients deposit amount that gets
+ * printed to the clients_deposit.txt database file.
+ *
+ * Description: This function basically prints the data held by its function
+ * parameters to the clients_deposit.txt database file.
+ */
+void printToDb(struct VCLIENTSDATA vClientsData, int depositAmt)
+{
+	FILE *file = fopen("database/clients_deposit.txt", "a+");
+
+	fprintf(file, "%s\t\t%d\n", vClientsData.vUserName, depositAmt);
+
+	fclose(file);
+}
+
+/**
+ * DbValidator - Database Validator Function.
+ * @vClientsData: This function parameter holds the username data of the user
+ * required by the Database Validator function.
+ *
+ * Description: This function searches the entire clients_deposit.txt database
+ * file and then checks whether the vClientsData.vUserName data held by the
+ * function parameter exists in the clients_deposit.txt database file and then
+ * responds appropriately.
+ */
+void DbValidator(struct VCLIENTSDATA vClientsData)
+{
+	FILE *file = fopen("database/clients_deposit.txt", "r");
+	char buffer[100];
+	struct VCLIENTSDATA dBClientsData;
+	int depositorFnRet, s_ret;
+
+
+	while (fgets(buffer, 100, file) != NULL)
+	{
+		(s_ret = sscanf(buffer, "%s%d",
+				dBClientsData.vUserName,
+				&dBClientsData.vDepositAmt
+		)) ?
+			s_ret : printf("\n sscanf Operation Failed!\n");
+
+		if (strcmp(vClientsData.vUserName, dBClientsData.vUserName) == 0)
+		{
+			break;
+		}
+	}
+
+	if (strcmp(vClientsData.vUserName, dBClientsData.vUserName) == 0)
+	{
+		printf(" Your Account Balance: $%d\n", dBClientsData.vDepositAmt);
+	}
+	else
+	{
+		depositorFnRet = depositorFn();
+		printToDb(vClientsData, depositorFnRet);
+
+	}
+
+	fclose(file);
 }
 
 #endif /* _E_BANKING_H_ */
