@@ -49,6 +49,8 @@ struct CLIENTSDATA cDV1(char retD[5])
 	{
 		printf("\n Kindly, enter the following details to create your account\n");
 
+/* The goto start1 statement executes from here */
+start1:
 		printf(" Username: ");
 		fgets(clientsData.userName, 50, stdin);
 		(s_ret = sscanf(clientsData.userName, "%s", clientsData.userName)) ?
@@ -59,12 +61,12 @@ struct CLIENTSDATA cDV1(char retD[5])
 		if (dataLength != 8)
 		{
 			putchar('\n');
-			printf(" Data entry failed! Your username must be 8 characters long.\n");
-			printf("\n-----------------GOODBYE FROM E-BANKING SYSTEM-----------------");
-			printf("\n\n");
-			exit(1);
+			printf(" Data entry failed! Your username must be 8 characters long.\n\n");
+			goto start1;
 		}
 
+/* The goto start2 statement executes from here */
+start2:
 		printf(" Password: ");
 		fgets(clientsData.passWord, 50, stdin);
 		(s_ret = sscanf(clientsData.passWord, "%s", clientsData.passWord)) ?
@@ -75,10 +77,8 @@ struct CLIENTSDATA cDV1(char retD[5])
 		if (dataLength != 8)
 		{
 			putchar('\n');
-			printf(" Data entry failed! Your password must be 8 characters long.\n");
-			printf("\n-----------------GOODBYE FROM E-BANKING SYSTEM-----------------");
-			printf("\n\n");
-			exit(1);
+			printf(" Data entry failed! Your password must be 8 characters long.\n\n");
+			goto start2;
 		}
 
 		printf(" Age: ");
@@ -150,55 +150,68 @@ struct VCLIENTSDATA cDV2(char retD[5])
 	struct CLIENTSDATA clientsData;
 
 	FILE *file = fopen("database/clients_data.txt", "r+");
-	int authLogin = 0, s_ret;
+	int authLogin = 0, s_ret, counter = 1;
 
 	if (strcmp(retD, "yes") == 0)
 	{
 		char buffer[150];
 
-		printf("\n Sign In to Your Account");
-		printf("\n Username: ");
-		fgets(vClientsData.vUserName, 50, stdin);
-		(s_ret = sscanf(vClientsData.vUserName, "%s", vClientsData.vUserName)) ?
-					s_ret : printf("sscanf Function Failed!");
-
-		printf(" Password: ");
-		fgets(vClientsData.vPassWord, 50, stdin);
-		(s_ret = sscanf(vClientsData.vPassWord, "%s", vClientsData.vPassWord)) ?
-					s_ret : printf("sscanf Function Failed!");
-
-		while (fgets(buffer, 150, file) != NULL)
+		while (counter <= 4)
 		{
-			(s_ret = sscanf(buffer, "%s\t\t%s\t%s\t%s\n",
-					clientsData.userName,
-					clientsData.passWord,
-					clientsData.age,
-					clientsData.email
-			)) ?
-				s_ret : printf("sscanf Function Failed!");
+			counter++;
 
+			printf("\n Sign In to Your Account");
+			printf("\n Username: ");
+			fgets(vClientsData.vUserName, 50, stdin);
+			(s_ret = sscanf(vClientsData.vUserName, "%s", vClientsData.vUserName)) ?
+						s_ret : printf("sscanf Function Failed!");
 
-			if ((strcmp(vClientsData.vUserName, clientsData.userName) == 0) &&
-				(strcmp(vClientsData.vPassWord, clientsData.passWord) == 0))
+			printf(" Password: ");
+			fgets(vClientsData.vPassWord, 50, stdin);
+			(s_ret = sscanf(vClientsData.vPassWord, "%s", vClientsData.vPassWord)) ?
+						s_ret : printf("sscanf Function Failed!");
+
+			while (fgets(buffer, 150, file) != NULL)
 			{
-				authLogin += 1;
-				loadingDisplay();
-				printf("\n Dear %s, You Have Sucessfully Signed In!\n\n",
-					clientsData.userName);
+				(s_ret = sscanf(buffer, "%s\t\t%s\t%s\t%s\n",
+						clientsData.userName,
+						clientsData.passWord,
+						clientsData.age,
+						clientsData.email
+				)) ?
+					s_ret : printf("sscanf Function Failed!");
+
+				if ((strcmp(vClientsData.vUserName, clientsData.userName) == 0) &&
+					(strcmp(vClientsData.vPassWord, clientsData.passWord) == 0))
+				{
+					authLogin += 1;
+					loadingDisplay();
+					printf("\n Dear %s, You Have Sucessfully Signed In!\n\n",
+						clientsData.userName);
+
+					/* counter asssigned 5 to terminate the parent loop */
+					counter = 5;
+				}
 			}
-		}
 
-		fclose(file);
+			if (authLogin == 0 && counter < 4)
+			{
+				printf("\n Invalid Username and/or Password Entry!\n");
+				rewind(file);
+				continue;
+			}
 
-		if (authLogin == 0)
-		{
-			printf("\n Invalid Username and/or Password Entry!\n");
-			printf("\n-----------------GOODBYE FROM E-BANKING SYSTEM-----------------");
-			printf("\n\n");
-			exit(1);
+			if (counter == 4)
+			{
+				printf("\n Invalid Username and/or Password Entry!\n");
+				printf("\n-----------------GOODBYE FROM E-BANKING SYSTEM-----------------");
+				printf("\n\n");
+				exit(1);
+			}
 		}
 	}
 
+	fclose(file);
 	return (vClientsData);
 }
 
