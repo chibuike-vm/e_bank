@@ -28,14 +28,14 @@ void loadingDisplay(void)
 /**
  * cDV1 - Client Data Validator1 Function.
  *
- * @retD: This is a string function parameter which provides the input for
- * for the cDV1 function.
+ * @retD: This is a null terminated char array function parameter which provides
+ * the input for for the cDV1 function.
  *
  * Description: This function is basically a validator function that validates
- * the input string provided by an interacting user. It also prompts the user
- * for string inputs as the case may be and then goes ahead to store those user
- * inputs data into a data structure provided by the struct CLIENTSDATA
- * data-type.
+ * the input null terminated char array provided by an interacting user. It also
+ * prompts the user for null terminated char array inputs as the case may be and
+ * then goes ahead to store those user inputs data into a data structure
+ * provided by the struct CLIENTSDATA data-type.
  *
  * Return: This function return struct CLIENTSDATA data-type upon successful
  * execution.
@@ -98,8 +98,8 @@ start2:
 /**
  * pToDb - Print To Database Function.
  *
- * @retD: This is a string function parameter which provides the input for
- * for the pToDb function.
+ * @retD: This is a null terminated char array function parameter which provides
+ * the input for for the pToDb function.
  *
  * @cDV1Fptr: This is a function pointer passed as an argument/function
  * parameter which will is subsequently called back inside the parent function
@@ -135,14 +135,15 @@ void pToDb(char retD[5], struct CLIENTSDATA (*cDV1Fptr)(char retD[5]))
 
 /**
  * cDV2 - Client Data Validator2 Function.
- * @retD: This is a string function parameter which provides the input for
- * for the cDV2 function.
+ * @retD: This is a null terminated char array function parameter which provides
+ * the input for for the cDV2 function.
  *
  * Description: This function is basically a validator function that validates
- * the username and password string inputs provided by an interacting user.
+ * the username and password null terminated char array inputs provided by an
+ * interacting user.
  *
- * Return: This function returns a vClientsData struct data-type upon
- * successful execution.
+ * Return: This function returns a vClientsData struct data-type upon successful
+ * execution.
  */
 struct VCLIENTSDATA cDV2(char retD[5])
 {
